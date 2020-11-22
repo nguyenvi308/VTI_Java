@@ -1,0 +1,98 @@
+CREATE DATABASE employee_manager;
+use employee_manager;
+
+
+CREATE TABLE user (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    FullName VARCHAR(45) NOT NULL,
+    Email VARCHAR(35) NOT NULL,
+    Password VARCHAR(12) NOT NULL
+);
+INSERT INTO `User`  (id   , FullName, 			Email,				 `Password`		)
+VALUES
+					(1,			N'Nguyễn Thị Mỵ',	'mynt2407@gmail.com', 'Mynguyen123'),
+					(2,			N'Nguyễn Ngọc Duy',	'duynn03@gmail.com', 'duyNguyen'),
+                    (3,			N'Nguyễn Hùng Mạnh','hungmanh@gmail.com', 'hunGmanh1'),
+                    (4,			N'Tống Thị Nhung',	'nhung@gmail.com', 		'nhungtOng'),
+                    (5,			N'Trần Thị Kim Anh','kimoanh.tran@gmail.com', 'tran.kim');
+
+INSERT INTO `User`  (id   , FullName, 			Email,				 `Password`		)
+VALUES 				(6,			'Nguyen Vi',		'vi@gmail.com','dafaf');
+
+
+
+
+
+CREATE TABLE manager (
+    id INT,
+    ExpInYear TINYINT,
+    FOREIGN KEY (id)
+        REFERENCES user (id)
+);
+insert into manager values (1,3) , (2,5);
+insert into manager values (6,3);
+
+
+drop table employee;
+CREATE TABLE employee (
+    id INT,
+    ProSkill VARCHAR(10),
+    FOREIGN KEY (id)
+        REFERENCES user (id)
+);
+insert into employee values (3,'SQL'),(4,'JAVA'),(5,'PHP');
+
+drop table project;
+CREATE TABLE project (
+    projectId INT AUTO_INCREMENT PRIMARY KEY,
+    projectName VARCHAR(45)
+);
+alter table project engine = InnoDB;
+insert into project(projectName) values ('project1'), ('project2') , ('project3');
+
+
+drop table project_working;
+CREATE TABLE project_working (
+    projectId INT,
+    managerId INT,
+    employeeId INT,
+    FOREIGN KEY (projectID)
+        REFERENCES project (projectId),
+    FOREIGN KEY (managerId)
+        REFERENCES manager (id),
+    FOREIGN KEY (employeeId)
+        REFERENCES employee (id)
+);
+alter table project_working engine = InnoDB;
+insert into project_working values  (1,1,3), (2,2,4),(2,2,5);
+
+-- Question 2 - Java
+-- Select employees and managers in a specific project
+-- in case is project2
+SELECT
+    project.projectName,
+    manager.id AS 'Manager',
+    employee.id AS 'Employee'
+FROM
+    employee_manager.project_working
+        JOIN
+    manager ON project_working.managerId = manager.id
+        JOIN
+    employee ON project_working.employeeId = employee.id
+        JOIN
+    project ON project_working.projectId = project.projectId
+WHERE
+    project.projectName = 'project2';
+
+
+-- Question 3 - Java
+-- Select all managers of all projects
+SELECT DISTINCT
+    (manager.id), project.projectName
+FROM
+    manager
+        JOIN
+    project_working ON manager.id = project_working.managerId
+        JOIN
+    project ON project_working.projectid = project.projectId;
+
